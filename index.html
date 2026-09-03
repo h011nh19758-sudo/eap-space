@@ -1,1635 +1,317 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="zh-Hant">
 <head>
-  <base target="_top">
-
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  <title>EAP 宇宙訊號探測站</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
-      background:
-        radial-gradient(circle at top, #17356e 0%, #091633 45%, #050b1d 100%);
-      color: white;
-      min-height: 100vh;
+      font-family: "Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;
+      background: radial-gradient(circle at top,#17356e 0%,#091633 45%,#050b1d 100%);
+      color: #fff; min-height: 100vh;
     }
-
-    .container {
-      max-width: 760px;
-      margin: auto;
-      padding: 32px 18px 70px;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .alien {
-      font-size: 58px;
-      margin-bottom: 10px;
-    }
-
-    h1 {
-      font-size: 30px;
-      margin: 5px 0 8px;
-    }
-
-    h2 {
-      line-height: 1.5;
-    }
-
-    .subtitle {
-      color: #bad5ff;
-      line-height: 1.8;
-      font-size: 15px;
-    }
-
+    .container { max-width: 780px; margin:auto; padding:30px 18px 70px; }
+    .header { text-align:center; margin-bottom:28px; }
+    .alien { font-size:58px; }
+    h1 { font-size:30px; margin:8px 0; }
+    h2 { line-height:1.5; }
+    .subtitle { color:#bad5ff; line-height:1.8; font-size:15px; }
     .card {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
-      padding: 22px;
-      margin-bottom: 18px;
-      backdrop-filter: blur(7px);
+      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+      border-radius:20px; padding:22px; margin-bottom:18px; backdrop-filter:blur(7px);
     }
-
-    .question {
-      font-size: 17px;
-      font-weight: bold;
-      line-height: 1.7;
-      margin-bottom: 15px;
-    }
-
-    .options {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    label.option {
-      display: block;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 13px 14px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    label.option:hover {
-      background: rgba(91, 168, 255, 0.18);
-    }
-
-    input {
-      margin-right: 7px;
-      transform: scale(1.15);
-    }
-
-    .section-title {
-      margin: 34px 0 14px;
-      font-size: 21px;
-      color: #7edcff;
-    }
-
-    .hint {
-      color: #a8c5ef;
-      font-size: 13px;
-      margin-top: 12px;
-      line-height: 1.6;
-    }
-
+    .question { font-size:17px; font-weight:bold; line-height:1.7; margin-bottom:15px; }
+    .options { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    label.option { display:block; background:rgba(255,255,255,.06); padding:13px 14px; border-radius:12px; cursor:pointer; }
+    label.option:hover { background:rgba(91,168,255,.18); }
+    input { margin-right:7px; transform:scale(1.15); }
+    .section-title { margin:34px 0 14px; font-size:21px; color:#7edcff; }
+    .hint { color:#a8c5ef; font-size:13px; margin-top:12px; line-height:1.6; }
     button {
-      width: 100%;
-      border: none;
-      border-radius: 16px;
-      padding: 17px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      background: linear-gradient(90deg, #27c8ff, #7372ff);
-      color: white;
-      margin-top: 16px;
+      width:100%; border:0; border-radius:16px; padding:17px; font-size:18px; font-weight:bold;
+      cursor:pointer; background:linear-gradient(90deg,#27c8ff,#7372ff); color:#fff; margin-top:16px;
     }
-
-    button:hover {
-      filter: brightness(1.08);
-    }
-
-    #error {
-      display: none;
-      background: rgba(181, 48, 72, 0.9);
-      padding: 15px;
-      border-radius: 12px;
-      margin: 15px 0;
-      line-height: 1.6;
-    }
-
-    #loading {
-      display: none;
-      text-align: center;
-      padding: 70px 20px;
-    }
-
-    .loadingRadar {
-      font-size: 64px;
-      animation: pulse 1.2s infinite;
-    }
-
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.15);
-      }
-
-      100% {
-        transform: scale(1);
-      }
-    }
-
-    #result {
-      display: none;
-    }
-
-    .resultHero {
-      text-align: center;
-      padding: 30px 15px;
-    }
-
-    .signal {
-      font-size: 17px;
-      color: #bad5ff;
-      margin: 15px 0;
-    }
-
-    .primary {
-      font-size: 26px;
-      font-weight: bold;
-      margin: 20px 0;
-      line-height: 1.6;
-    }
-
-    .secondary {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 25px;
-      line-height: 1.6;
-      color: #cae1ff;
-    }
-
-    .radarRow {
-      margin: 19px 0;
-    }
-
-    .radarLabel {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 7px;
-      font-size: 15px;
-    }
-
-    .bar {
-      height: 14px;
-      background: rgba(255, 255, 255, 0.10);
-      border-radius: 20px;
-      overflow: hidden;
-    }
-
-    .barFill {
-      height: 100%;
-      background: linear-gradient(90deg, #29d4ff, #9874ff);
-      border-radius: 20px;
-      transition: width 1s ease;
-    }
-
-    .description {
-      line-height: 1.9;
-      color: #dbe9ff;
-      white-space: pre-line;
-    }
-
-    .privacy {
-      text-align: center;
-      margin-top: 28px;
-      color: #a8c5ef;
-      font-size: 14px;
-    }
-
-    .resultNote {
-      background: rgba(126, 220, 255, 0.07);
-    }
-
-    @media (max-width: 600px) {
-      .options {
-        grid-template-columns: 1fr;
-      }
-
-      h1 {
-        font-size: 25px;
-      }
-
-      .container {
-        padding: 22px 14px 55px;
-      }
-
-      .card {
-        padding: 18px;
-      }
-    }
+    #error { display:none; background:rgba(181,48,72,.9); padding:15px; border-radius:12px; margin:15px 0; line-height:1.6; }
+    #loading { display:none; text-align:center; padding:70px 20px; }
+    .loadingRadar { font-size:64px; animation:pulse 1.2s infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+    #result { display:none; }
+    .resultHero { text-align:center; padding:30px 15px; }
+    .signal { font-size:17px; color:#bad5ff; margin:15px 0; }
+    .primary { font-size:26px; font-weight:bold; margin:20px 0; line-height:1.6; }
+    .secondary { font-size:20px; font-weight:bold; margin-bottom:25px; line-height:1.6; color:#cae1ff; }
+    .radarRow { margin:19px 0; }
+    .radarLabel { display:flex; justify-content:space-between; gap:10px; margin-bottom:7px; font-size:15px; }
+    .bar { height:14px; background:rgba(255,255,255,.10); border-radius:20px; overflow:hidden; }
+    .barFill { height:100%; background:linear-gradient(90deg,#29d4ff,#9874ff); border-radius:20px; transition:width 1s ease; }
+    .description { line-height:1.9; color:#dbe9ff; white-space:pre-line; }
+    .privacy { text-align:center; margin-top:28px; color:#a8c5ef; font-size:14px; }
+    .resultNote { background:rgba(126,220,255,.07); }
+    .badge { display:inline-block; padding:5px 10px; border-radius:999px; background:rgba(126,220,255,.12); color:#bfeaff; font-size:13px; margin-top:8px; }
+    @media(max-width:600px){ .options{grid-template-columns:1fr} h1{font-size:25px}.container{padding:22px 14px 55px}.card{padding:18px} }
   </style>
 </head>
-
-
 <body>
-
 <div class="container">
-
-  <!-- ========================================================
-       問卷區
-       ======================================================== -->
-
   <div id="survey">
-
     <div class="header">
-
-      <div class="alien">
-        🛸
-      </div>
-
-      <h1>
-        EAP 宇宙訊號探測站
-      </h1>
-
+      <div class="alien">🛸</div>
+      <h1>EAP 宇宙訊號探測站</h1>
       <div class="subtitle">
-        10 道訊號偵測，看看最近哪顆星球正在呼叫你。
-        <br><br>
-
-        ⏱ 約 1 分鐘完成
-        <br>
-
-        本調查僅供 EAP 需求探索與服務規劃參考，
-        非心理診斷工具。
+        最近的你，收到哪一顆星球的訊號？<br><br>
+        請依據近期實際感受完成訊號探測。<br>
+        本調查作為 EAP 服務需求瞭解及後續規劃參考，非屬心理診斷或醫療評估工具。
       </div>
-
+      <div class="badge">匿名需求探索｜不蒐集姓名、Email、員工編號</div>
     </div>
 
-
-    <h2 class="section-title">
-      📡 第一階段｜宇宙訊號掃描
-    </h2>
-
-
-    <!-- Q1～Q8 由 JavaScript 自動產生 -->
-
+    <h2 class="section-title">📡 第一階段｜宇宙訊號掃描</h2>
     <div id="scaleQuestions"></div>
 
-
-    <h2 class="section-title">
-      🛰️ 第二階段｜EAP 支援基地
-    </h2>
-
-
-    <!-- Q9 -->
-
+    <h2 class="section-title">🛰️ 第二階段｜EAP 支援基地</h2>
     <div class="card">
-
-      <div class="question">
-        Q9｜目前你最希望獲得哪些專業協助？
-      </div>
-
-      <div class="options">
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q9"
-            value="財務／理財"
-          >
-          財務／理財
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q9"
-            value="法律諮詢"
-          >
-          法律諮詢
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q9"
-            value="心理諮詢"
-          >
-          心理諮詢
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q9"
-            value="健康諮詢"
-          >
-          健康諮詢
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q9"
-            value="工作／職涯諮詢"
-          >
-          工作／職涯諮詢
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q9"
-            value="家庭／親子協助"
-          >
-          家庭／親子協助
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q9"
-            value="目前沒有"
-          >
-          目前沒有
-        </label>
-
-      </div>
-
-
-      <div class="hint">
-        ※ 可複選，最多選擇 3 項。<br>
-        ※ 選擇「目前沒有」時，其他選項會自動取消。
-      </div>
-
+      <div class="question">Q13｜如果有需要，目前你最希望 EAP 提供哪些專業協助？</div>
+      <div class="options" id="q13Options"></div>
+      <div class="hint">※ 可複選，至多 3 項。選擇「目前沒有」時，其他選項會自動取消。</div>
     </div>
 
-
-    <!-- Q10 -->
-
     <div class="card">
-
-      <div class="question">
-        Q10｜如果需要使用 EAP，你最在意哪些事項？
-      </div>
-
-      <div class="options">
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q10"
-            value="保密性"
-          >
-          保密性
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q10"
-            value="專業性"
-          >
-          專業性
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q10"
-            value="服務品質"
-          >
-          服務品質
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q10"
-            value="使用便利性"
-          >
-          使用便利性
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q10"
-            value="諮詢時間"
-          >
-          諮詢時間
-        </label>
-
-
-        <label class="option">
-          <input
-            type="checkbox"
-            name="q10"
-            value="服務方式"
-          >
-          服務方式
-        </label>
-
-      </div>
-
-
-      <div class="hint">
-        ※ 可複選，最多選擇 3 項。
-      </div>
-
+      <div class="question">Q14｜如果需要使用 EAP，你最重視哪些事項？</div>
+      <div class="options" id="q14Options"></div>
+      <div class="hint">※ 可複選，至多 3 項。</div>
     </div>
-
 
     <div id="error"></div>
-
-
-    <button
-      id="submitBtn"
-      onclick="submitSurvey()"
-    >
-      📡 啟動星際訊號分析
-    </button>
-
+    <button id="submitBtn" onclick="submitSurvey()">📡 啟動星際訊號分析</button>
   </div>
-
-
-
-  <!-- ========================================================
-       分析中
-       ======================================================== -->
 
   <div id="loading">
-
-    <div class="loadingRadar">
-      📡
-    </div>
-
-    <h2>
-      正在分析宇宙訊號……
-    </h2>
-
-    <div class="subtitle">
-      雷達掃描中，請稍候。
-    </div>
-
+    <div class="loadingRadar">📡</div>
+    <h2>正在分析宇宙訊號……</h2>
+    <div class="subtitle">雷達掃描中，請稍候。</div>
   </div>
-
-
-
-  <!-- ========================================================
-       結果區
-       ======================================================== -->
 
   <div id="result">
-
     <div class="resultHero">
-
-      <div style="font-size:60px;">
-        👽
-      </div>
-
+      <div style="font-size:60px">👽</div>
       <h1 id="resultTitle"></h1>
-
-      <div class="signal">
-        宇宙訊號探測完成
-      </div>
-
-      <div
-        id="primary"
-        class="primary"
-      ></div>
-
-      <div
-        id="secondary"
-        class="secondary"
-      ></div>
-
+      <div class="signal">宇宙訊號探測完成</div>
+      <div id="primary" class="primary"></div>
+      <div id="secondary" class="secondary"></div>
     </div>
-
-
-    <!-- 訊號強度 -->
 
     <div class="card">
-
-      <h2>
-        📡 你的宇宙訊號強度
-      </h2>
-
+      <h2>📡 你的六大宇宙訊號強度</h2>
       <div id="radar"></div>
-
     </div>
 
-
-    <!-- 主要訊號 -->
-
-    <div
-      id="primaryCard"
-      class="card"
-    >
-
-      <h2>
-        🔭 主要訊號解析
-      </h2>
-
-      <div
-        id="primaryDescription"
-        class="description"
-      ></div>
-
+    <div id="primaryCard" class="card">
+      <h2>🔭 訊號解析</h2>
+      <div id="primaryDescription" class="description"></div>
     </div>
 
-
-    <!-- 次要訊號 -->
-
-    <div
-      id="secondaryCard"
-      class="card"
-    >
-
-      <h2>
-        🛰️ 次要訊號解析
-      </h2>
-
-      <div
-        id="secondaryDescription"
-        class="description"
-      ></div>
-
-    </div>
-
-
-    <!-- 總部提醒 -->
-
-    <div
-      id="summaryCard"
-      class="card resultNote"
-    >
-
-      <h2>
-        🛸 宇宙總部提醒
-      </h2>
-
-      <div
-        id="summaryText"
-        class="description"
-      ></div>
-
-      <br>
-
+    <div id="summaryCard" class="card resultNote">
+      <h2>🛸 宇宙總部提醒</h2>
+      <div id="summaryText" class="description"></div><br>
       <div class="description">
-
-        這份結果主要協助你了解近期可能較需要支持的生活面向，
-        並不是心理診斷。
-
-        <br><br>
-
-        EAP 可提供工作、生活、心理、健康、
-        財務及法律等相關支持。
-
-        <br><br>
-
-        <strong>
-          需要協助，不必一個人在宇宙漂流。
-        </strong>
-
+        這份結果主要協助你了解近期可能較需要支持的生活面向，並不是心理診斷。<br><br>
+        EAP 可提供工作、生活、心理、健康、財務及法律等相關支持。<br><br>
+        <strong>需要協助，不必一個人在宇宙漂流。</strong>
       </div>
-
     </div>
 
-
-    <div class="privacy">
-      🔒 EAP 重視隱私與保密
-    </div>
-
-
-    <button onclick="restartSurvey()">
-      🔄 再探測一次
-    </button>
-
+    <div class="privacy">🔒 本頁不要求姓名、Email 或員工編號</div>
+    <button onclick="restartSurvey()">🔄 再探測一次</button>
   </div>
-
 </div>
 
-
-
 <script>
-
-/* ============================================================
- * Q1～Q8 題目
- * ============================================================ */
+/* ★ 後端只負責接收匿名統計資料，不作為同仁開啟的前台網址 */
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwwJCldpCazgng1Tu2ul4zQy1DlZQ93WFAF721QYcI_FOHEpHokcSXfppNBQuO_kJjZ/exec';
 
 const questions = [
-
-  {
-    id: 'q1',
-    text:
-      'Q1｜最近工作量、工作任務或時間壓力，是否讓你覺得需要一些協助？'
-  },
-
-  {
-    id: 'q2',
-    text:
-      'Q2｜最近是否曾因工作適應、工作調整或生涯發展而感到困擾？'
-  },
-
-  {
-    id: 'q3',
-    text:
-      'Q3｜與主管或同事互動時，是否曾因溝通或人際關係感到困擾？'
-  },
-
-  {
-    id: 'q4',
-    text:
-      'Q4｜工作與個人生活之間，是否讓你覺得不容易取得平衡？'
-  },
-
-  {
-    id: 'q5',
-    text:
-      'Q5｜最近是否有家庭、伴侶、親子或照顧問題，占據你不少心力？'
-  },
-
-  {
-    id: 'q6',
-    text:
-      'Q6｜最近是否覺得工作或生活壓力，需要一些調適或支持？'
-  },
-
-  {
-    id: 'q7',
-    text:
-      'Q7｜最近是否有情緒上的困擾，希望有人可以談談或提供協助？'
-  },
-
-  {
-    id: 'q8',
-    text:
-      'Q8｜最近是否希望獲得醫療保健、飲食營養、運動或其他健康相關資訊與協助？'
-  }
-
+  ['q1','Q1｜近期是否因工作量、工作任務或時間壓力，而感到負擔？'],
+  ['q2','Q2｜近期是否因工作適應、工作調整或生涯發展等問題，而感到困擾？'],
+  ['q3','Q3｜近期與主管或同事互動時，是否曾因溝通不順而感到困擾？'],
+  ['q4','Q4｜近期是否曾因職場人際關係、意見衝突或合作問題，而感到壓力？'],
+  ['q5','Q5｜近期是否覺得工作與個人生活之間，不容易取得平衡？'],
+  ['q6','Q6｜近期是否因家庭、伴侶、親子或照顧等問題，而需要投入較多心力？'],
+  ['q7','Q7｜近期是否感到工作或生活壓力有所累積，需要適度調適或支持？'],
+  ['q8','Q8｜近期是否曾有情緒上的困擾，希望有人可以談談或提供協助？'],
+  ['q9','Q9｜近期是否曾因收支、貸款、債務或其他財務問題，而感到壓力？'],
+  ['q10','Q10｜近期是否曾有理財、財務規劃或其他經濟問題，希望獲得相關資訊或專業協助？'],
+  ['q11','Q11｜近期是否曾遇到法律或權益相關問題，而不確定應如何處理？'],
+  ['q12','Q12｜近期是否曾有法律諮詢、權益說明或其他法律相關資訊的需求？']
 ];
-
-
-const scaleOptions = [
-  '沒有',
-  '偶爾',
-  '有一些',
-  '經常'
-];
-
-
-/* ============================================================
- * 頁面初始化
- * ============================================================ */
+const scaleOptions = ['沒有','偶爾','有一些','經常'];
+const q13Options = ['工作／職涯諮詢','職場人際協助','心理諮詢','家庭／親子協助','財務／理財諮詢','法律諮詢','健康諮詢','目前沒有'];
+const q14Options = ['保密性','專業性','服務品質','使用便利性','諮詢時間','服務方式'];
+const scoreMap = {'沒有':0,'偶爾':1,'有一些':2,'經常':3};
 
 renderQuestions();
-
-limitCheckboxes(
-  'q9',
-  3
-);
-
-limitCheckboxes(
-  'q10',
-  3
-);
-
+renderChecks('q13Options','q13',q13Options);
+renderChecks('q14Options','q14',q14Options);
+limitCheckboxes('q13',3);
+limitCheckboxes('q14',3);
 setupNoneOption();
 
-
-/* ============================================================
- * 自動產生 Q1～Q8
- * ============================================================ */
-
-function renderQuestions() {
-
-  const container =
-    document.getElementById(
-      'scaleQuestions'
-    );
-
-
-  questions.forEach(
-    function(q) {
-
-      const card =
-        document.createElement(
-          'div'
-        );
-
-
-      card.className =
-        'card';
-
-
-      let html =
-
-        '<div class="question">' +
-        q.text +
-        '</div>' +
-
-        '<div class="options">';
-
-
-      scaleOptions.forEach(
-        function(option) {
-
-          html +=
-
-            '<label class="option">' +
-
-            '<input ' +
-            'type="radio" ' +
-            'name="' +
-            q.id +
-            '" ' +
-            'value="' +
-            option +
-            '">' +
-
-            option +
-
-            '</label>';
-
-        }
-      );
-
-
-      html +=
-        '</div>';
-
-
-      card.innerHTML =
-        html;
-
-
-      container.appendChild(
-        card
-      );
-
-    }
-  );
-}
-
-
-/* ============================================================
- * Q9 / Q10 最多選 3 項
- * ============================================================ */
-
-function limitCheckboxes(
-  name,
-  max
-) {
-
-  const boxes =
-    document.querySelectorAll(
-      'input[name="' +
-      name +
-      '"]'
-    );
-
-
-  boxes.forEach(
-    function(box) {
-
-      box.addEventListener(
-        'change',
-        function() {
-
-          const checked =
-            document.querySelectorAll(
-              'input[name="' +
-              name +
-              '"]:checked'
-            );
-
-
-          if (
-            checked.length >
-            max
-          ) {
-
-            this.checked =
-              false;
-
-
-            showError(
-              '這一題最多只能選擇 ' +
-              max +
-              ' 項。'
-            );
-          }
-
-        }
-      );
-
-    }
-  );
-}
-
-
-/* ============================================================
- * Q9「目前沒有」互斥
- * ============================================================ */
-
-function setupNoneOption() {
-
-  const boxes =
-    document.querySelectorAll(
-      'input[name="q9"]'
-    );
-
-
-  const noneBox =
-    document.querySelector(
-      'input[name="q9"][value="目前沒有"]'
-    );
-
-
-  boxes.forEach(
-    function(box) {
-
-      box.addEventListener(
-        'change',
-        function() {
-
-          if (
-            this.value ===
-            '目前沒有' &&
-            this.checked
-          ) {
-
-            boxes.forEach(
-              function(other) {
-
-                if (
-                  other.value !==
-                  '目前沒有'
-                ) {
-
-                  other.checked =
-                    false;
-                }
-
-              }
-            );
-
-          }
-
-          else if (
-            this.value !==
-            '目前沒有' &&
-            this.checked
-          ) {
-
-            noneBox.checked =
-              false;
-          }
-
-        }
-      );
-
-    }
-  );
-}
-
-
-/* ============================================================
- * 送出問卷
- * ============================================================ */
-
-function submitSurvey() {
-
-  hideError();
-
-
-  const data = {};
-
-
-  /* Q1～Q8 */
-
-  for (
-    let i = 1;
-    i <= 8;
-    i++
-  ) {
-
-    const selected =
-      document.querySelector(
-        'input[name="q' +
-        i +
-        '"]:checked'
-      );
-
-
-    if (!selected) {
-
-      showError(
-        '📡 請先完成第 ' +
-        i +
-        ' 題。'
-      );
-
-      return;
-    }
-
-
-    data[
-      'q' + i
-    ] =
-      selected.value;
-  }
-
-
-  /* Q9 */
-
-  data.q9 =
-    getCheckedValues(
-      'q9'
-    );
-
-
-  if (
-    data.q9.length === 0
-  ) {
-
-    showError(
-      'Q9 請至少選擇 1 項。'
-    );
-
-    return;
-  }
-
-
-  if (
-    data.q9.length > 3
-  ) {
-
-    showError(
-      'Q9 最多只能選擇 3 項。'
-    );
-
-    return;
-  }
-
-
-  /* Q10 */
-
-  data.q10 =
-    getCheckedValues(
-      'q10'
-    );
-
-
-  if (
-    data.q10.length === 0
-  ) {
-
-    showError(
-      'Q10 請至少選擇 1 項。'
-    );
-
-    return;
-  }
-
-
-  if (
-    data.q10.length > 3
-  ) {
-
-    showError(
-      'Q10 最多只能選擇 3 項。'
-    );
-
-    return;
-  }
-
-
-  /* 切換到分析畫面 */
-
-  document
-    .getElementById(
-      'survey'
-    )
-    .style.display =
-      'none';
-
-
-  document
-    .getElementById(
-      'loading'
-    )
-    .style.display =
-      'block';
-
-
-  /* GitHub Pages 版：在瀏覽器本機完成分析，再把答案送到 Apps Script 儲存 */
-
-  try {
-
-    const result = analyzeSurveyLocally(data);
-
-    // 先顯示結果，不讓 Google 登入狀態影響使用者作答體驗
-    showResult(result);
-
-    // 背景送回 Google Sheet。使用 text/plain 避免跨網域預檢。
-    sendToGoogleSheet(data);
-
-  } catch (error) {
-
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('survey').style.display = 'block';
-
-    showError(
-      '❌ 星際分析失敗：' +
-      (error && error.message ? error.message : '未知錯誤')
-    );
-  }
-}
-
-
-/* ============================================================
- * GitHub Pages → Apps Script 後端
- * ============================================================ */
-
-const BACKEND_URL =
-  'https://script.google.com/macros/s/AKfycbwwJCldpCazgng1Tu2ul4zQy1DlZQ93WFAF721QYcI_FOHEpHokcSXfppNBQuO_kJjZ/exec';
-
-function sendToGoogleSheet(data) {
-
-  fetch(BACKEND_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Content-Type': 'text/plain;charset=utf-8'
-    },
-    body: JSON.stringify(data),
-    keepalive: true
-  }).catch(function(error) {
-    // 不阻斷結果頁；僅在瀏覽器主控台留下紀錄
-    console.error('EAP 資料送出失敗：', error);
+function renderQuestions(){
+  const c=document.getElementById('scaleQuestions');
+  questions.forEach(([id,text])=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML='<div class="question">'+text+'</div><div class="options">'+
+      scaleOptions.map(o=>'<label class="option"><input type="radio" name="'+id+'" value="'+o+'">'+o+'</label>').join('')+
+      '</div>';
+    c.appendChild(card);
   });
 }
-
-
-/* ============================================================
- * 前端本機分析
- * ============================================================ */
-
-function analyzeSurveyLocally(data) {
-
-  const q1 = scoreScaleLocal(data.q1);
-  const q2 = scoreScaleLocal(data.q2);
-  const q3 = scoreScaleLocal(data.q3);
-  const q4 = scoreScaleLocal(data.q4);
-  const q5 = scoreScaleLocal(data.q5);
-  const q6 = scoreScaleLocal(data.q6);
-  const q7 = scoreScaleLocal(data.q7);
-  const q8 = scoreScaleLocal(data.q8);
-
-  const planets = {
-    '🔥 爆肝星': q1 + q2,
-    '⚡ 人際風暴星': q3 * 2,
-    '🏠 家庭引力星': q4 + q5,
-    '🌧️ 低氣壓星': q6 + q7,
-    '🩺 健康星': q8 * 2
-  };
-
-  const result = calculatePlanetResultLocal(planets);
-
-  return {
-    success: true,
-    planets: planets,
-    primary: result.primary,
-    secondary: result.secondary,
-    status: result.status,
-    title: result.title,
-    summary: result.summary,
-    primaryDescription: getPlanetDescriptionLocal(result.primary),
-    secondaryDescription: getPlanetDescriptionLocal(result.secondary),
-    radar: createRadarDataLocal(planets)
-  };
+function renderChecks(containerId,name,opts){
+  document.getElementById(containerId).innerHTML=opts.map(o=>
+    '<label class="option"><input type="checkbox" name="'+name+'" value="'+o+'">'+o+'</label>'
+  ).join('');
 }
-
-function scoreScaleLocal(answer) {
-  const map = {
-    '沒有': 0,
-    '偶爾': 1,
-    '有一些': 2,
-    '經常': 3
-  };
-
-  if (map[answer] === undefined) {
-    throw new Error('偵測到無效的量表答案。');
-  }
-
-  return map[answer];
-}
-
-function calculatePlanetResultLocal(planets) {
-
-  const entries = Object.keys(planets)
-    .map(function(name) {
-      return { name: name, score: planets[name] };
-    })
-    .sort(function(a, b) {
-      return b.score - a.score;
+function limitCheckboxes(name,max){
+  document.querySelectorAll('input[name="'+name+'"]').forEach(box=>{
+    box.addEventListener('change',function(){
+      const checked=document.querySelectorAll('input[name="'+name+'"]:checked');
+      if(checked.length>max){ this.checked=false; showError('這一題最多只能選擇 '+max+' 項。'); }
     });
-
-  const maxScore = entries[0].score;
-
-  if (maxScore <= 1) {
-    return {
-      status: 'stable',
-      title: '🌍 SIGNAL STABLE',
-      primary: '🌍 目前訊號穩定',
-      secondary: '',
-      summary:
-        '目前沒有偵測到較明顯的 EAP 支援需求。' +
-        'EAP 不一定要等到遇到重大問題才能使用，' +
-        '未來工作、家庭、健康或生活出現需要協助的時候，' +
-        '支援基地一直都在。'
-    };
-  }
-
-  const primaryList = entries.filter(function(item) {
-    return item.score === maxScore;
   });
-
-  if (primaryList.length > 1) {
-    return {
-      status: 'dual',
-      title: '📡 MULTIPLE SIGNALS DETECTED',
-      primary: primaryList.map(function(item) {
-        return item.name;
-      }).join(' ＋ '),
-      secondary: '',
-      summary:
-        '本次探測偵測到多個相同強度的主要需求訊號，' +
-        '表示近期可能同時有不同面向需要多一點支持。'
-    };
+}
+function setupNoneOption(){
+  const boxes=document.querySelectorAll('input[name="q13"]');
+  const none=document.querySelector('input[name="q13"][value="目前沒有"]');
+  boxes.forEach(box=>box.addEventListener('change',function(){
+    if(this.value==='目前沒有'&&this.checked){
+      boxes.forEach(o=>{ if(o.value!=='目前沒有') o.checked=false; });
+    } else if(this.value!=='目前沒有'&&this.checked){ none.checked=false; }
+  }));
+}
+function getCheckedValues(name){
+  return Array.from(document.querySelectorAll('input[name="'+name+'"]:checked')).map(x=>x.value);
+}
+function collectData(){
+  const data={};
+  for(let i=1;i<=12;i++){
+    const s=document.querySelector('input[name="q'+i+'"]:checked');
+    if(!s) throw new Error('📡 請先完成第 '+i+' 題。');
+    data['q'+i]=s.value;
   }
+  data.q13=getCheckedValues('q13');
+  data.q14=getCheckedValues('q14');
+  if(data.q13.length===0) throw new Error('Q13 請至少選擇 1 項。');
+  if(data.q14.length===0) throw new Error('Q14 請至少選擇 1 項。');
+  return data;
+}
+function calculateResult(data){
+  const s=i=>scoreMap[data['q'+i]];
+  const planets={
+    '🔥 爆肝星':s(1)+s(2),
+    '⚡ 人際風暴星':s(3)+s(4),
+    '🏠 家庭引力星':s(5)+s(6),
+    '🌧️ 低氣壓星':s(7)+s(8),
+    '💰 財務黑洞':s(9)+s(10),
+    '⚖️ 法律迷霧星':s(11)+s(12)
+  };
+  const entries=Object.entries(planets).map(([name,score])=>({name,score})).sort((a,b)=>b.score-a.score);
+  const max=entries[0].score;
+  const high=entries.filter(x=>x.score>=4);
+  let status,title,primary='',secondary='',summary='';
 
-  const primary = primaryList[0].name;
-  const lowerEntries = entries.filter(function(item) {
-    return item.score < maxScore;
-  });
-
-  let secondary = '';
-
-  if (lowerEntries.length > 0) {
-    const secondScore = lowerEntries[0].score;
-    secondary = lowerEntries
-      .filter(function(item) {
-        return item.score === secondScore;
-      })
-      .map(function(item) {
-        return item.name;
-      })
-      .join(' ／ ');
+  if(max<=1){
+    status='stable'; title='🌍 SIGNAL STABLE'; primary='🌍 目前訊號穩定';
+    summary='目前沒有偵測到較明顯的 EAP 支援需求。EAP 不一定要等到遇到重大問題才能使用，未來有需要時，支援基地一直都在。';
+  } else if(high.length>=4){
+    status='galaxy'; title='🌌 GALAXY-WIDE SIGNAL DETECTED'; primary='🌌 偵測到多面向支援需求';
+    summary='本次探測顯示，近期可能有多個生活面向同時需要較多支持，因此不以單一星球作為主要訊號。可以先從目前最希望獲得協助的事情開始。';
+  } else {
+    const top=entries.filter(x=>x.score===max);
+    if(top.length>1 || high.length>=2){
+      status='multiple'; title='📡 MULTIPLE SIGNALS DETECTED';
+      const important=(high.length>=2?high:top);
+      primary=important.map(x=>x.name).join(' ＋ ');
+      summary='本次探測偵測到多個較明顯的需求訊號，表示近期可能同時有不同面向需要多一點支持。';
+    } else {
+      status='normal'; title='📡 EAP SIGNAL DETECTED'; primary=entries[0].name;
+      const secondScore=entries.find(x=>x.score<max)?.score;
+      secondary=secondScore===undefined?'':entries.filter(x=>x.score===secondScore).map(x=>x.name).join(' ／ ');
+      summary='宇宙訊號探測完成。以下結果呈現近期較需要關注的 EAP 支援面向。';
+    }
   }
-
   return {
-    status: 'normal',
-    title: '📡 EAP SIGNAL DETECTED',
-    primary: primary,
-    secondary: secondary,
-    summary:
-      '宇宙訊號探測完成。' +
-      '以下結果呈現近期較需要關注的 EAP 支援面向。'
+    success:true, planets,status,title,primary,secondary,summary,
+    highCount:high.length,
+    primaryDescription:getDescription(status,primary,high),
+    radar:entries
   };
 }
-
-function getPlanetDescriptionLocal(name) {
-
-  if (!name) return '';
-
-  const descriptions = [];
-
-  if (name.indexOf('爆肝星') !== -1) {
-    descriptions.push(
-      '🔥 工作訊號：最近在工作負荷、工作適應、工作調整或生涯發展方面，可能有較明顯的支援需求。'
-    );
-  }
-
-  if (name.indexOf('人際風暴星') !== -1) {
-    descriptions.push(
-      '⚡ 人際訊號：最近在主管、同事互動或職場溝通方面，可能有較多需要整理或協調的地方。'
-    );
-  }
-
-  if (name.indexOf('家庭引力星') !== -1) {
-    descriptions.push(
-      '🏠 生活訊號：近期工作與生活平衡、家庭、伴侶、親子或照顧責任，可能占據較多心力。'
-    );
-  }
-
-  if (name.indexOf('低氣壓星') !== -1) {
-    descriptions.push(
-      '🌧️ 身心訊號：最近可能累積了一些壓力或情緒調適需求，適時休息、找人談談或尋求支持，都是可以考慮的方式。'
-    );
-  }
-
-  if (name.indexOf('健康星') !== -1) {
-    descriptions.push(
-      '🩺 健康訊號：近期可能較關注健康、醫療保健、飲食營養、運動或其他健康相關需求。'
-    );
-  }
-
-  return descriptions.join('\n\n');
+function getDescription(status,primary,high){
+  if(status==='stable') return '';
+  if(status==='galaxy') return high.map(x=>planetText(x.name)).join('\n\n');
+  return primary.split(/ ＋ | ／ /).map(planetText).filter(Boolean).join('\n\n');
 }
+function planetText(name){
+  const m={
+    '🔥 爆肝星':'🔥 工作訊號：近期在工作負荷、工作適應、工作調整或生涯發展方面，可能有較明顯的支援需求。',
+    '⚡ 人際風暴星':'⚡ 人際訊號：近期在主管、同事互動、職場溝通或合作方面，可能有較多需要整理或協調的地方。',
+    '🏠 家庭引力星':'🏠 生活訊號：近期工作與生活平衡、家庭、伴侶、親子或照顧責任，可能占據較多心力。',
+    '🌧️ 低氣壓星':'🌧️ 身心訊號：近期可能累積了一些壓力或情緒調適需求，適時休息、找人談談或尋求支持，都是可以考慮的方式。',
+    '💰 財務黑洞':'💰 財務訊號：近期可能有收支、貸款、債務、理財或財務規劃方面的壓力或資訊需求。',
+    '⚖️ 法律迷霧星':'⚖️ 法律訊號：近期可能有法律、權益或程序方面的疑問，尋求適當的專業資訊有助於釐清處理方向。'
+  };
+  return m[name]||'';
+}
+async function submitSurvey(){
+  hideError();
+  let data;
+  try{ data=collectData(); }catch(e){ showError(e.message); return; }
+  document.getElementById('survey').style.display='none';
+  document.getElementById('loading').style.display='block';
+  const result=calculateResult(data);
 
-function createRadarDataLocal(planets) {
-  return Object.keys(planets).map(function(name) {
-    const score = planets[name];
-    return {
-      name: name,
-      score: score,
-      max: 6,
-      level: Math.round(score / 6 * 5)
-    };
+  /* 匿名送出：不蒐集姓名、Email、員工編號；no-cors 避免跨網域回應限制 */
+  const payload={...data, clientResult:result};
+  try{
+    fetch(BACKEND_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload)
+    }).catch(()=>{});
+  }catch(e){ console.warn(e); }
+
+  setTimeout(()=>showResult(result),450);
+}
+function showResult(r){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('result').style.display='block';
+  document.getElementById('resultTitle').textContent=r.title;
+  document.getElementById('primary').textContent=r.status==='normal'?'主要訊號：'+r.primary:r.primary;
+  const sec=document.getElementById('secondary');
+  if(r.secondary){ sec.textContent='次要訊號：'+r.secondary; sec.style.display='block'; } else sec.style.display='none';
+  document.getElementById('summaryText').textContent=r.summary;
+  const pc=document.getElementById('primaryCard');
+  if(r.primaryDescription){ document.getElementById('primaryDescription').textContent=r.primaryDescription; pc.style.display='block'; }
+  else pc.style.display='none';
+  renderRadar(r.radar);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderRadar(radar){
+  const c=document.getElementById('radar'); c.innerHTML='';
+  radar.forEach(item=>{
+    const percent=item.score/6*100;
+    const level=item.score<=1?'訊號微弱':item.score<=3?'偵測到訊號':item.score<=5?'訊號明顯':'強烈訊號';
+    const row=document.createElement('div'); row.className='radarRow';
+    row.innerHTML='<div class="radarLabel"><span>'+item.name+'｜'+level+'</span><span>'+item.score+' / 6</span></div>'+
+      '<div class="bar"><div class="barFill" style="width:'+percent+'%"></div></div>';
+    c.appendChild(row);
   });
 }
-
-
-/* ============================================================
- * 顯示結果
- * ============================================================ */
-
-function showResult(result) {
-
-  document
-    .getElementById(
-      'loading'
-    )
-    .style.display =
-      'none';
-
-
-  document
-    .getElementById(
-      'result'
-    )
-    .style.display =
-      'block';
-
-
-  document
-    .getElementById(
-      'resultTitle'
-    )
-    .textContent =
-      result.title;
-
-
-  document
-    .getElementById(
-      'summaryText'
-    )
-    .textContent =
-      result.summary || '';
-
-
-  /* 訊號穩定 */
-
-  if (
-    result.status ===
-    'stable'
-  ) {
-
-    document
-      .getElementById(
-        'primary'
-      )
-      .textContent =
-        result.primary;
-
-
-    document
-      .getElementById(
-        'secondary'
-      )
-      .style.display =
-        'none';
-
-
-    document
-      .getElementById(
-        'primaryCard'
-      )
-      .style.display =
-        'none';
-
-
-    document
-      .getElementById(
-        'secondaryCard'
-      )
-      .style.display =
-        'none';
-
-  }
-
-
-  /* 有偵測到主要訊號 */
-
-  else {
-
-    document
-      .getElementById(
-        'primary'
-      )
-      .textContent =
-        '主要訊號：' +
-        result.primary;
-
-
-    if (
-      result.secondary
-    ) {
-
-      document
-        .getElementById(
-          'secondary'
-        )
-        .textContent =
-          '次要訊號：' +
-          result.secondary;
-
-
-      document
-        .getElementById(
-          'secondary'
-        )
-        .style.display =
-          'block';
-
-    }
-
-
-    else {
-
-      document
-        .getElementById(
-          'secondary'
-        )
-        .style.display =
-          'none';
-
-    }
-
-
-    document
-      .getElementById(
-        'primaryDescription'
-      )
-      .textContent =
-        result.primaryDescription ||
-        '';
-
-
-    document
-      .getElementById(
-        'primaryCard'
-      )
-      .style.display =
-        'block';
-
-
-    if (
-      result.secondaryDescription
-    ) {
-
-      document
-        .getElementById(
-          'secondaryDescription'
-        )
-        .textContent =
-          result.secondaryDescription;
-
-
-      document
-        .getElementById(
-          'secondaryCard'
-        )
-        .style.display =
-          'block';
-
-    }
-
-
-    else {
-
-      document
-        .getElementById(
-          'secondaryCard'
-        )
-        .style.display =
-          'none';
-
-    }
-
-  }
-
-
-  renderRadar(
-    result.radar
-  );
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth'
-  });
-}
-
-
-/* ============================================================
- * 訊號強度圖
- * ============================================================ */
-
-function renderRadar(radar) {
-
-  const container =
-    document.getElementById(
-      'radar'
-    );
-
-
-  container.innerHTML =
-    '';
-
-
-  if (
-    !Array.isArray(radar)
-  ) {
-
-    return;
-  }
-
-
-  radar.forEach(
-    function(item) {
-
-      const percent =
-        item.score /
-        item.max *
-        100;
-
-
-      const row =
-        document.createElement(
-          'div'
-        );
-
-
-      row.className =
-        'radarRow';
-
-
-      row.innerHTML =
-
-        '<div class="radarLabel">' +
-
-        '<span>' +
-        item.name +
-        '</span>' +
-
-        '<span>' +
-        item.score +
-        ' / 6</span>' +
-
-        '</div>' +
-
-        '<div class="bar">' +
-
-        '<div class="barFill" ' +
-        'style="width:' +
-        percent +
-        '%"></div>' +
-
-        '</div>';
-
-
-      container.appendChild(
-        row
-      );
-
-    }
-  );
-}
-
-
-/* ============================================================
- * 取得 checkbox
- * ============================================================ */
-
-function getCheckedValues(name) {
-
-  return Array.from(
-
-    document.querySelectorAll(
-      'input[name="' +
-      name +
-      '"]:checked'
-    )
-
-  ).map(
-    function(item) {
-
-      return item.value;
-
-    }
-  );
-}
-
-
-/* ============================================================
- * 顯示錯誤
- * ============================================================ */
-
-function showError(text) {
-
-  const box =
-    document.getElementById(
-      'error'
-    );
-
-
-  box.textContent =
-    text;
-
-
-  box.style.display =
-    'block';
-
-
-  window.scrollTo({
-    top:
-      Math.max(
-        box.offsetTop - 40,
-        0
-      ),
-    behavior:
-      'smooth'
-  });
-}
-
-
-/* ============================================================
- * 隱藏錯誤
- * ============================================================ */
-
-function hideError() {
-
-  document
-    .getElementById(
-      'error'
-    )
-    .style.display =
-      'none';
-}
-
-
-/* ============================================================
- * 重新測驗
- * ============================================================ */
-
-function restartSurvey() {
-
-  location.reload();
-}
-
+function showError(t){ const b=document.getElementById('error'); b.textContent=t; b.style.display='block'; window.scrollTo({top:Math.max(b.offsetTop-40,0),behavior:'smooth'}); }
+function hideError(){ document.getElementById('error').style.display='none'; }
+function restartSurvey(){ location.reload(); }
 </script>
-
 </body>
-
 </html>
